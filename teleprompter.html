@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>显密度母林佛学会 — 修法文 Teleprompter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,600;1,400;1,600&family=Cinzel:wght@400;600&display=swap');
+
+:root {
+  --bg:       #fdf8f0;
+  --line1:    #C03000;
+  --line2:    #0050B0;
+  --line3:    #3a2800;
+  --line4:    #6b5840;
+  --gold:     #9a7020;
+  --gold-dim: #c8a060;
+  --border:   rgba(154,112,32,0.2);
+  --repeat-bg:#7a1020;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  background: var(--bg);
+  color: var(--line3);
+  font-family: 'Noto Serif SC','Noto Serif',serif;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  position: relative; z-index: 100;
+  background: rgba(253,248,240,0.97);
+  border-bottom: 2px solid rgba(192,48,0,.2);
+  padding: 6px 14px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+}
+
+.logo-text {
+  font-size: 12px; color: var(--line3); font-weight: 700;
+  white-space: nowrap;
+}
+.logo-text .en {
+  font-family: 'Cinzel', serif; font-size: 9px;
+  color: var(--gold); display: block;
+}
+
+#section-nav { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
+
+.nav-btn {
+  background: #fff7ed;
+  border: 1px solid var(--gold-dim);
+  color: var(--line3);
+  font-size: 10px; padding: 4px 8px;
+  border-radius: 4px; cursor: pointer;
+  font-family: 'Noto Serif SC', serif;
+  transition: background .15s;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: var(--line1); color: #fff; border-color: var(--line1);
+}
+
+/* speed + font controls */
+.ctrl-group { display: flex; align-items: center; gap: 6px; }
+.ctrl-label { font-size: 10px; color: var(--gold); }
+.ctrl-btn {
+  background: #fff7ed; border: 1px solid var(--gold-dim);
+  color: var(--line3); font-size: 12px; width: 28px; height: 28px;
+  border-radius: 4px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+}
+.ctrl-btn:hover { background: var(--gold-dim); color: #fff; }
+#speed-display { font-size: 11px; color: var(--line1); min-width: 36px; text-align:center; }
+
+#play-btn {
+  background: var(--line1); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 16px; font-size: 13px; cursor: pointer;
+  font-weight: 700;
+}
+#play-btn:hover { opacity: .85; }
+
+/* ── SCROLL AREA ── */
+#scroll-outer {
+  flex: 1; overflow: hidden; position: relative;
+}
+#scroll-inner {
+  height: 100%; overflow-y: scroll;
+  padding: 30px 60px 200px;
+  scroll-behavior: smooth;
+}
+#scroll-inner::-webkit-scrollbar { width: 6px; }
+#scroll-inner::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+/* ── SECTION ── */
+.section {
+  margin-bottom: 60px;
+  border-top: 2px solid var(--border);
+  padding-top: 30px;
+}
+
+.section-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px;
+  margin-bottom: 18px; flex-wrap: wrap;
+}
+
+.section-title {
+  font-size: 20px; font-weight: 700;
+  color: var(--line3); line-height: 1.4;
+}
+.section-title .sub {
+  font-size: 13px; color: var(--gold);
+  font-style: italic; display: block; margin-top: 2px;
+}
+
+/* Audio player per section */
+.section-audio {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.section-audio audio {
+  height: 30px; border-radius: 6px;
+  outline: none;
+}
+
+/* Repeat button */
+.repeat-zone {
+  display: flex; align-items: center; gap: 10px;
+  margin: 14px 0 20px;
+  padding: 10px 16px;
+  background: rgba(122,16,32,0.06);
+  border-left: 4px solid var(--repeat-bg);
+  border-radius: 0 8px 8px 0;
+}
+.repeat-badge {
+  background: var(--repeat-bg); color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 3px 9px; border-radius: 12px;
+  white-space: nowrap;
+}
+.repeat-counter {
+  font-size: 18px; font-weight: 900;
+  color: var(--repeat-bg); min-width: 28px;
+}
+.repeat-btn {
+  background: var(--repeat-bg); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 6px 14px; font-size: 12px;
+  cursor: pointer; font-weight: 700;
+}
+.repeat-btn:hover { opacity: .85; }
+.repeat-note {
+  font-size: 11px; color: var(--line4); font-style: italic;
+}
+
+/* ── VERSE BLOCKS ── */
+.verse { margin-bottom: 28px; }
+
+.line-tibetan {
+  font-size: 15px; color: #5a3d00;
+  font-style: italic; line-height: 1.8;
+  margin-bottom: 4px;
+}
+.line-roman {
+  font-size: 20px; color: var(--line1);
+  font-weight: 600; line-height: 1.7;
+  letter-spacing: 0.03em;
+}
+.line-zh-sound {
+  font-size: 22px; color: var(--line2);
+  font-weight: 600; line-height: 1.7;
+  font-family: 'Noto Serif SC', serif;
+}
+.line-zh {
+  font-size: 20px; color: var(--line3);
+  line-height: 1.8;
+  font-family: 'Noto Serif SC', serif;
+}
+.line-en {
+  font-size: 14px; color: var(--line4);
+  font-style: italic; line-height: 1.7;
+}
+
+.mantra-block {
+  background: rgba(192,48,0,0.04);
+  border: 1px solid rgba(192,48,0,0.15);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 14px 0;
+  text-align: center;
+}
+.mantra-block .line-roman { font-size: 24px; }
+.mantra-block .line-zh-sound { font-size: 26px; }
+
+/* ── PROGRESS BAR ── */
+#progress-bar {
+  position: fixed; bottom: 0; left: 0;
+  height: 4px; background: var(--line1);
+  width: 0%; transition: width .2s;
+  z-index: 200;
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="logo-text">
+    显密度母林佛学会
+    <span class="en">Xian Mi Du Mu Lin Buddhist Association</span>
+  </div>
+
+  <div id="section-nav">
+    <button class="nav-btn active" onclick="jumpTo('s1')">1 大自在祈请</button>
+    <button class="nav-btn" onclick="jumpTo('s2')">2 莲师财神咒</button>
+    <button class="nav-btn" onclick="jumpTo('s3')">3 荟供祈请文</button>
+    <button class="nav-btn" onclick="jumpTo('s4')">4 皈依发心</button>
+    <button class="nav-btn" onclick="jumpTo('s5')">5 供灯咒语</button>
+    <button class="nav-btn" onclick="jumpTo('s6')">6 迴向&增广咒</button>
+  </div>
+
+  <div class="ctrl-group">
+    <span class="ctrl-label">速度</span>
+    <button class="ctrl-btn" onclick="changeSpeed(-5)">−</button>
+    <span id="speed-display">50</span>
+    <button class="ctrl-btn" onclick="changeSpeed(5)">+</button>
+  </div>
+
+  <div class="ctrl-group">
+    <span class="ctrl-label">字体</span>
+    <button class="ctrl-btn" onclick="changeFontSize(-1)">A−</button>
+    <button class="ctrl-btn" onclick="changeFontSize(1)">A+</button>
+  </div>
+
+  <button id="play-btn" onclick="togglePlay()">▶ 开始</button>
+</div>
+
+<div id="scroll-outer">
+<div id="scroll-inner">
+
+<!-- ══════════════════════════════════════════════
+     SECTION 1 — Pages 2–11
+     ══════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-title">
+      大自在祈请文 · 八圣吉祥祈请文 · 金刚七句祈请文
+      <span class="sub">The Great Cloud Of Prayers · Eight Noble Auspicious Ones · Seven-Verse Prayer (Pages 2–11)</span>
+    </div>
+  </div>
+
+  <div class="section-audio">
+    <audio id="audio-s1" src="section1.mp3" preload="none" controls></audio>
+  </div>
+
+  <div class="verse">
+    <div class="line-zh">大自在祈请文</div>
+    <div class="line-en">The Great Cloud Of Prayers And Blessings</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">DE CHEN BAR WA CHEN PO'I SMON LAM</div>
+    <div class="line-zh-sound">得钦 巴瓦 钦波伊 门朗</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">NAMO GURU RINPOCHE</div>
+    <div class="line-zh-sound">南无 咕噜 仁波切</div>
+    <div class="line-zh">顶礼上师宝</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">HO! DU SUM SANG GYE KUN GYI NGO WO NYI</div>
+    <div class="line-zh-sound">吙！ 杜苏 桑杰 滚吉 俄沃 尼</div>
+    <div class="line-zh">吙！三世诸佛之本体</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">ZHING KHAM KUN GYI JE PO PEMA JUNG</div>
+    <div class="line-zh-sound">兴坎 滚吉 杰波 贝玛 炯</div>
+    <div class="line-zh">一切刹土之法王莲花生</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">KA DRIN CHEN PO'I LA MA DAM PA LA</div>
+    <div class="line-zh-sound">嘎珍 钦波伊 喇嘛 当巴 拉</div>
+    <div class="line-zh">具大恩德之殊胜上师前</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">SOL WA DEB SO JIN GYI LAB TU SOL</div>
+    <div class="line-zh-sound">索瓦 德索 金吉 拉布 杜索</div>
+    <div class="line-zh">祈请加持摄受祈垂顾</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-zh">八圣吉祥祈请文</div>
+    <div class="line-en">The Verses Of The Eight Noble Auspicious Ones</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">TASHI TSEGPA TASHI SHOG / TASHI PALBAR TASHI SHOG</div>
+    <div class="line-zh-sound">扎西 则巴 扎西 秀 / 扎西 帕巴 扎西 秀</div>
+    <div class="line-zh">吉祥圆满吉祥吧 / 吉祥辉耀吉祥吧</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">TASHI DEWA TASHI SHOG / KUN LA TASHI SHOG SHOG SHOG</div>
+    <div class="line-zh-sound">扎西 得瓦 扎西 秀 / 滚拉 扎西 秀秀秀</div>
+    <div class="line-zh">吉祥安乐吉祥吧 / 一切吉祥吉祥吧</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-zh">金刚七句祈请文</div>
+    <div class="line-en">Seven-Verse Prayer To Guru Rinpoche</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">HU / UGYEN YUL GYI NUB CHANG TSAM</div>
+    <div class="line-zh-sound">吙 / 吴坚 域吉 努藏 赞</div>
+    <div class="line-zh">吙！于西北方之乌金境</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">PE MA GE SAR DONG PO LA</div>
+    <div class="line-zh-sound">贝玛 给萨 东波 拉</div>
+    <div class="line-zh">莲花花蕊蕊茎之上</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">YA TSEN CHOK GI NGO DRUB NYE</div>
+    <div class="line-zh-sound">雅倩 确吉 俄珠 涅</div>
+    <div class="line-zh">稀有殊胜成就已获得</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">PE MA JUNG NE SHYE SU DRAG</div>
+    <div class="line-zh-sound">贝玛 炯内 谢苏 扎</div>
+    <div class="line-zh">名为莲花生大士</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">KHOR DU KHAN DRO MANG PO KHOR</div>
+    <div class="line-zh-sound">廓度 康卓 芒波 廓</div>
+    <div class="line-zh">眷属空行众多围绕</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">CHE KYI JE SU DAG DRUB KYI</div>
+    <div class="line-zh-sound">切吉 杰苏 达珠 吉</div>
+    <div class="line-zh">依循您之行迹而修行</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">CHIN GYI LAB CHIR SHEG SU SOL</div>
+    <div class="line-zh-sound">金吉 拉奇 谢苏 索</div>
+    <div class="line-zh">祈请降临赐予加持</div>
+  </div>
+
+  <div class="mantra-block">
+    <div class="line-roman">GURU PEMA SIDDHI HUM</div>
+    <div class="line-zh-sound">咕噜 贝玛 悉地 吽</div>
+  </div>
+
+  <div class="repeat-zone" id="repeat-s1">
+    <span class="repeat-badge">念三遍 × 3</span>
+    <span class="repeat-counter" id="cnt-s1">3</span>
+    <button class="repeat-btn" onclick="startRepeat('s1', 3)">🔁 重复</button>
+    <span class="repeat-note">点击后自动返回本节顶部，倒数至 0 停止</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 2 — Page 12 莲师财神总持咒
+     ══════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-title">
+      莲师财神总持咒
+      <span class="sub">The General Mantra of Guru Dzambala (Lama Norlha) — Page 12</span>
+    </div>
+  </div>
+
+  <div class="section-audio">
+    <audio id="audio-s2" src="section2.mp3" preload="none" controls></audio>
+  </div>
+
+  <div class="verse">
+    <div class="line-zh">莲师财神总持咒</div>
+    <div class="line-en">The General Mantra of Guru Dzambala</div>
+  </div>
+
+  <div class="mantra-block">
+    <div class="line-roman">OM AH HUM / VAJRA GURU PEMA SIDDHI HUM</div>
+    <div class="line-zh-sound">嗡 啊 吽 / 班匝 咕噜 贝玛 悉地 吽</div>
+  </div>
+
+  <div class="mantra-block">
+    <div class="line-roman">OM DZAMBALA DZALENDRI DAYA HUM PHAT</div>
+    <div class="line-zh-sound">嗡 詹巴拉 扎蓝扎日 达雅 吽 呸</div>
+    <div class="line-zh">莲师财神心咒</div>
+  </div>
+
+  <div class="repeat-zone" id="repeat-s2">
+    <span class="repeat-badge">念七遍 × 7</span>
+    <span class="repeat-counter" id="cnt-s2">7</span>
+    <button class="repeat-btn" onclick="startRepeat('s2', 7)">🔁 重复</button>
+    <span class="repeat-note">点击后自动返回本节顶部，倒数至 0 停止</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 3 — Page 13 荟供祈请文
+     ══════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-title">
+      荟供祈请文
+      <span class="sub">Tsog Prayer — Page 13</span>
+    </div>
+  </div>
+
+  <div class="section-audio">
+    <audio id="audio-s3" src="section3.mp3" preload="none" controls></audio>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">HO / KYE MA TSA WA'I LA MA RIN PO CHE</div>
+    <div class="line-zh-sound">吙 / 杰玛 匝瓦伊 喇嘛 仁波切</div>
+    <div class="line-zh">吙！根本上师如意宝</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">NYI DA'I DKYIL 'KHOR GDAN LA BZHUGS SU GSOL</div>
+    <div class="line-zh-sound">尼达伊 京廓 丹拉 竹苏 索</div>
+    <div class="line-zh">日月轮座请就坐</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">KU DANG SUNG DANG THUGS KYI MCHOD PA 'BUL</div>
+    <div class="line-zh-sound">古当 松当 图吉 确巴 布</div>
+    <div class="line-zh">身语意之供品敬奉献</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">BYIN GRYIS RLABS MDZAD THUGS RJE'I ZHAL GZIGS SHOG</div>
+    <div class="line-zh-sound">金吉 拉则 图吉 夏喜 秀</div>
+    <div class="line-zh">祈赐加持以悲眼垂顾</div>
+  </div>
+
+  <div class="mantra-block">
+    <div class="line-roman">GURU PEMA SIDDHI HUM</div>
+    <div class="line-zh-sound">咕噜 贝玛 悉地 吽</div>
+  </div>
+
+  <div class="repeat-zone" id="repeat-s3">
+    <span class="repeat-badge">念三遍 × 3</span>
+    <span class="repeat-counter" id="cnt-s3">3</span>
+    <button class="repeat-btn" onclick="startRepeat('s3', 3)">🔁 重复</button>
+    <span class="repeat-note">点击后自动返回本节顶部，倒数至 0 停止</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 4 — Page 15 皈依发心
+     ══════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-title">
+      皈依发心
+      <span class="sub">Refuge &amp; Bodhicitta Prayer — Page 15</span>
+    </div>
+  </div>
+
+  <div class="section-audio">
+    <audio id="audio-s4" src="section4.mp4" preload="none" controls></audio>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">SANG GYE CHO DANG TSOG KYI MCHOG NAM LA</div>
+    <div class="line-zh-sound">桑杰 确当 措吉 确南 拉</div>
+    <div class="line-zh">佛陀正法及圣僧众前</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">JANG CHUB BAR DU DAG NI KYAB SU CHI</div>
+    <div class="line-zh-sound">强确 巴杜 达尼 恰苏 启</div>
+    <div class="line-zh">乃至菩提我皈依</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">DAG GI JIN SOG GYI PE SO NAM KYI</div>
+    <div class="line-zh-sound">达吉 金索 吉贝 索南 吉</div>
+    <div class="line-zh">以我布施等所集之福德</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">DRO LA PHAN CHIR SANG GYE DRUB PAR SHOG</div>
+    <div class="line-zh-sound">卓拉 盼迟 桑杰 珠巴 秀</div>
+    <div class="line-zh">为利众生愿成就佛果</div>
+  </div>
+
+  <div class="repeat-zone" id="repeat-s4">
+    <span class="repeat-badge">念三遍 × 3</span>
+    <span class="repeat-counter" id="cnt-s4">3</span>
+    <button class="repeat-btn" onclick="startRepeat('s4', 3)">🔁 重复</button>
+    <span class="repeat-note">点击后自动返回本节顶部，倒数至 0 停止</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 5 — Page 15 供灯咒语
+     ══════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-title">
+      供灯咒语
+      <span class="sub">Light Offering Mantras — Page 15</span>
+    </div>
+  </div>
+
+  <div class="section-audio">
+    <audio id="audio-s5" src="section5.mp4" preload="none" controls></audio>
+  </div>
+
+  <div class="verse">
+    <div class="line-zh">供灯咒</div>
+    <div class="line-en">Lamp Offering Mantra</div>
+  </div>
+
+  <div class="mantra-block">
+    <div class="line-roman">OM DIPA PUJA MAHA PUNYA GYANA JNANA SAMBHARA HUM</div>
+    <div class="line-zh-sound">嗡 帝巴 普扎 玛哈 奔雅 嘉那 加那 桑巴拉 吽</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-zh">供灯偈</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">LA MA SANG GYE LA MA CHO / DE ZHIN LA MA GE DUN TE</div>
+    <div class="line-zh-sound">喇嘛 桑杰 喇嘛 确 / 德欣 喇嘛 格顿 得</div>
+    <div class="line-zh">上师即佛上师法 / 如是上师亦是僧</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">KUN GYI JE PO LA MA YIN / LA MA NAM LA CHOD PA BUL</div>
+    <div class="line-zh-sound">滚吉 杰波 喇嘛 因 / 喇嘛 南拉 确巴 布</div>
+    <div class="line-zh">一切之主即上师 / 向诸上师敬供养</div>
+  </div>
+
+  <div class="repeat-zone" id="repeat-s5">
+    <span class="repeat-badge">念三遍 × 3</span>
+    <span class="repeat-counter" id="cnt-s5">3</span>
+    <button class="repeat-btn" onclick="startRepeat('s5', 3)">🔁 重复</button>
+    <span class="repeat-note">点击后自动返回本节顶部，倒数至 0 停止</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 6 — Page 16 迴向 + 增广加持咒
+     ══════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-title">
+      迴向 · 增广加持咒
+      <span class="sub">Dedication &amp; Mantra for Multiplying The Power of Recitation — Page 16</span>
+    </div>
+  </div>
+
+  <div class="section-audio">
+    <audio id="audio-s6" src="section6.mp4" preload="none" controls></audio>
+  </div>
+
+  <div class="verse">
+    <div class="line-zh">迴向文</div>
+    <div class="line-en">Dedication</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">GE WA DI YI NYE WA KYANG / SOK CHOG SANG GYE DRUB GYUR NE</div>
+    <div class="line-zh-sound">格瓦 帝伊 涅瓦 强 / 索确 桑杰 珠久 内</div>
+    <div class="line-zh">以此善业所积功德 / 愿速成就最胜佛陀</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-roman">DRO WA GCIG KYANG MA LUS PA / DE YI SA LA GOD PAR SHOG</div>
+    <div class="line-zh-sound">卓瓦 启强 玛吕 巴 / 得伊 萨拉 果巴 秀</div>
+    <div class="line-zh">无余一切众有情 / 愿皆安置彼果位</div>
+  </div>
+
+  <div class="verse">
+    <div class="line-zh">增广加持咒</div>
+    <div class="line-en">Mantra for Multiplying The Power of Recitation</div>
+  </div>
+
+  <div class="mantra-block">
+    <div class="line-roman">OM SAMBHARA SAMBHARA VIMANA SARA MAHA JAVA HUM</div>
+    <div class="line-zh-sound">嗡 桑巴拉 桑巴拉 比玛那 萨拉 玛哈 扎瓦 吽</div>
+  </div>
+
+  <div class="mantra-block">
+    <div class="line-roman">OM SMARA SMARA VIMANA SKARA MAHA JAVA HUM</div>
+    <div class="line-zh-sound">嗡 斯玛拉 斯玛拉 比玛那 斯嘎拉 玛哈 扎瓦 吽</div>
+  </div>
+
+  <div class="repeat-zone" id="repeat-s6">
+    <span class="repeat-badge">念三遍 × 3</span>
+    <span class="repeat-counter" id="cnt-s6">3</span>
+    <button class="repeat-btn" onclick="startRepeat('s6', 3)">🔁 重复</button>
+    <span class="repeat-note">点击后自动返回本节顶部，倒数至 0 停止</span>
+  </div>
+</div>
+
+</div><!-- end scroll-inner -->
+</div><!-- end scroll-outer -->
+
+<div id="progress-bar"></div>
+
+<script>
+// ── STATE ──
+let isPlaying = false;
+let scrollSpeed = 50;       // px per second
+let animFrame = null;
+let lastTime = null;
+let fontScale = 1.0;
+let repeatTimers = {};      // track active repeat countdowns
+
+const inner = document.getElementById('scroll-inner');
+
+// ── PLAY / PAUSE ──
+function togglePlay() {
+  isPlaying = !isPlaying;
+  document.getElementById('play-btn').textContent = isPlaying ? '⏸ 暂停' : '▶ 开始';
+  if (isPlaying) {
+    lastTime = null;
+    animFrame = requestAnimationFrame(autoScroll);
+  } else {
+    cancelAnimationFrame(animFrame);
+  }
+}
+
+function autoScroll(ts) {
+  if (!lastTime) lastTime = ts;
+  const dt = (ts - lastTime) / 1000;
+  lastTime = ts;
+  inner.scrollTop += scrollSpeed * dt;
+  updateProgress();
+  if (isPlaying) animFrame = requestAnimationFrame(autoScroll);
+}
+
+// ── PROGRESS ──
+function updateProgress() {
+  const max = inner.scrollHeight - inner.clientHeight;
+  const pct = max > 0 ? (inner.scrollTop / max) * 100 : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+inner.addEventListener('scroll', updateProgress);
+
+// ── SPEED ──
+function changeSpeed(delta) {
+  scrollSpeed = Math.max(5, Math.min(200, scrollSpeed + delta));
+  document.getElementById('speed-display').textContent = scrollSpeed;
+}
+
+// ── FONT SIZE ──
+function changeFontSize(delta) {
+  fontScale = Math.max(0.6, Math.min(2.0, fontScale + delta * 0.1));
+  document.querySelectorAll('.line-roman, .line-zh-sound, .line-zh, .line-en, .line-tibetan').forEach(el => {
+    el.style.fontSize = '';
+    const base = parseFloat(getComputedStyle(el).fontSize);
+    el.style.fontSize = (base * fontScale) + 'px';
+  });
+}
+
+// ── JUMP TO SECTION + AUTOPLAY AUDIO ──
+const audioMap = {
+  s1: 'audio-s1', s2: 'audio-s2', s3: 'audio-s3',
+  s4: 'audio-s4', s5: 'audio-s5', s6: 'audio-s6'
+};
+
+function jumpTo(sectionId) {
+  // Pause all audio first
+  Object.values(audioMap).forEach(id => {
+    const a = document.getElementById(id);
+    if (a) { a.pause(); a.currentTime = 0; }
+  });
+
+  // Scroll to section
+  const el = document.getElementById(sectionId);
+  if (el) {
+    inner.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+  }
+
+  // Highlight nav
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const idx = ['s1','s2','s3','s4','s5','s6'].indexOf(sectionId);
+  document.querySelectorAll('.nav-btn')[idx]?.classList.add('active');
+
+  // Autoplay section audio (short delay for scroll)
+  setTimeout(() => {
+    const audioId = audioMap[sectionId];
+    const audio = document.getElementById(audioId);
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    }
+  }, 600);
+}
+
+// ── REPEAT LOOP ──
+function startRepeat(sectionId, totalTimes) {
+  // Clear any existing timer for this section
+  if (repeatTimers[sectionId]) {
+    clearInterval(repeatTimers[sectionId]);
+    delete repeatTimers[sectionId];
+  }
+
+  let remaining = totalTimes;
+  const countEl = document.getElementById('cnt-' + sectionId);
+
+  function doRepeat() {
+    if (remaining <= 0) {
+      clearInterval(repeatTimers[sectionId]);
+      delete repeatTimers[sectionId];
+      countEl.textContent = '✓';
+      return;
+    }
+
+    // Scroll back to section top
+    const el = document.getElementById(sectionId);
+    if (el) inner.scrollTo({ top: el.offsetTop - 20, behavior: 'smooth' });
+
+    // Restart audio
+    const audio = document.getElementById('audio-' + sectionId);
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    }
+
+    countEl.textContent = remaining;
+    remaining--;
+  }
+
+  // First repeat immediately
+  doRepeat();
+
+  // Subsequent repeats fire when audio ends
+  const audio = document.getElementById('audio-' + sectionId);
+  if (audio) {
+    // Remove old listener if any
+    const newAudio = audio.cloneNode(true);
+    audio.parentNode.replaceChild(newAudio, audio);
+    newAudio.addEventListener('ended', function onEnd() {
+      if (remaining > 0) {
+        doRepeat();
+      } else {
+        countEl.textContent = '✓';
+        newAudio.removeEventListener('ended', onEnd);
+      }
+    });
+    // Start first play
+    newAudio.currentTime = 0;
+    newAudio.play().catch(() => {});
+    remaining--; // already counted first play
+    countEl.textContent = remaining > 0 ? remaining : '✓';
+  }
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowRight') changeSpeed(5);
+  if (e.code === 'ArrowLeft') changeSpeed(-5);
+  if (e.key === '1') jumpTo('s1');
+  if (e.key === '2') jumpTo('s2');
+  if (e.key === '3') jumpTo('s3');
+  if (e.key === '4') jumpTo('s4');
+  if (e.key === '5') jumpTo('s5');
+  if (e.key === '6') jumpTo('s6');
+});
+</script>
+</body>
+</html>
